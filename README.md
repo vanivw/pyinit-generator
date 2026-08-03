@@ -26,6 +26,18 @@ The project was also an opportunity to learn more about Python packaging, projec
 
 ---
 
+## Screenshots
+
+### PyInit Web Interface
+
+![PyInit Home](assets/images/pyinit-home.png)
+
+### Generated Project
+
+![Generated Project](assets/images/generated-project.png)
+
+---
+
 ## Features
 
 - Generate Python projects from reusable templates
@@ -46,7 +58,7 @@ The project was also an opportunity to learn more about Python packaging, projec
 ## Project Structure
 
 ```
-pyinit-mvp/
+pyinit-generator/
 │
 ├── pyinit/          # Core generator
 ├── pyinit_web/      # FastAPI backend
@@ -92,8 +104,8 @@ pyinit-mvp/
 Clone the repository.
 
 ```bash
-git clone https://github.com/<your-username>/pyinit.git
-cd pyinit
+git clone https://github.com/vanivw/pyinit-generator.git
+cd pyinit-generator
 ```
 
 Install Python dependencies.
@@ -172,12 +184,6 @@ Run all tests from the project root.
 ```bash
 pytest
 ```
-
----
-
-## Screenshots
-
-Screenshots of the web interface and generated projects will be added here.
 
 ---
 

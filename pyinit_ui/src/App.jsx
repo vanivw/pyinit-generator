@@ -149,7 +149,7 @@ function App() {
                   onChange={(e) => setStack(e.target.value)}
                   style={styles.input}
                 >
-                  <option value="fastapi">FastAPI API</option>
+                  <option value="fastapi">FastAPI</option>
                   <option value="lib">Python Library</option>
                   <option value="cli">CLI Tool</option>
                 </select>
