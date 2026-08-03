@@ -1,0 +1,71 @@
+{% if package_manager == "poetry" %}
+[tool.poetry]
+name = "{{ project_name }}"
+version = "0.1.0"
+description = ""
+authors = ["{{ project_name }} <you@example.com>"]
+readme = "README.md"
+packages = [{ include = "{{ package_name }}" }]
+
+[tool.poetry.dependencies]
+python = "^{{ python_version }}"
+{% if stack == "fastapi" %}
+fastapi = "*"
+uvicorn = {extras=["standard"], version="*"}
+{% endif %}
+
+[tool.poetry.group.dev.dependencies]
+pytest = "*"
+mypy = "*"
+ruff = "*"
+pre-commit = "*"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+{% elif package_manager == "hatch" %}
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "{{ project_name }}"
+version = "0.1.0"
+description = ""
+readme = "README.md"
+requires-python = ">= {{ python_version }}"
+authors = [{name = "{{ project_name }}", email = "you@example.com"}]
+dependencies = [
+{% if stack == "fastapi" -%}
+    "fastapi",
+    "uvicorn[standard]",
+{%- endif %}
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "mypy", "ruff", "pre-commit"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["{{ package_name }}"]
+{% else %}
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+[project]
+name = "{{ project_name }}"
+version = "0.1.0"
+description = ""
+readme = "README.md"
+requires-python = ">= {{ python_version }}"
+authors = [{name = "{{ project_name }}", email = "you@example.com"}]
+dependencies = [
+{% if stack == "fastapi" -%}
+    "fastapi",
+    "uvicorn[standard]",
+{%- endif %}
+]
+
+[tool.pdm.dev-dependencies]
+dev = ["pytest", "mypy", "ruff", "pre-commit"]
+{% endif %}

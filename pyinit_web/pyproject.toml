@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "pyinit_web"
+version = "0.1.0"
+description = ""
+authors = ["pyinit_web <you@example.com>"]
+readme = "README.md"
+packages = [{ include = "pyinit_web" }]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+fastapi = "*"
+uvicorn = {extras=["standard"], version="*"}
+
+[tool.poetry.group.dev.dependencies]
+pytest = "*"
+mypy = "*"
+ruff = "*"
+pre-commit = "*"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
