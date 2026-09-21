@@ -12,6 +12,7 @@ python = "^{{ python_version }}"
 {% if stack == "fastapi" %}
 fastapi = "*"
 uvicorn = {extras=["standard"], version="*"}
+pyyaml = "*"
 {% endif %}
 
 [tool.poetry.group.dev.dependencies]
@@ -39,6 +40,7 @@ dependencies = [
 {% if stack == "fastapi" -%}
     "fastapi",
     "uvicorn[standard]",
+    "pyyaml",
 {%- endif %}
 ]
 
@@ -63,6 +65,7 @@ dependencies = [
 {% if stack == "fastapi" -%}
     "fastapi",
     "uvicorn[standard]",
+    "pyyaml",
 {%- endif %}
 ]
 

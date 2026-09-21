@@ -1,6 +1,24 @@
 from fastapi import FastAPI
+import logging
+import json
+from {{ package_name }}.config import settings
 
-app = FastAPI(title="{{ project_name }}")
+class JsonFormatter(logging.Formatter):
+    def format(self, record):
+        payload = {
+            "time": self.formatTime(record, "%Y-%m-%dT%H:%M:%S"),
+            "level": record.levelname,
+            "logger": record.name,
+            "message": record.getMessage(),
+        }
+        return json.dumps(payload)
+
+
+handler = logging.StreamHandler()
+handler.setFormatter(JsonFormatter())
+logging.basicConfig(level=logging.INFO, handlers=[handler])
+
+app = FastAPI(title=settings["app"]["name"])
 
 @app.get("/health")
 def health():
