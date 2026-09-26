@@ -14,10 +14,9 @@ def test_invalid_pm_fails():
     assert result.exit_code != 0
     assert "pm must be one of" in (result.stdout + result.stderr)
 
-def test_existing_directory_fails_isolated():
-    with runner.isolated_filesystem():
-        Path("my_app").mkdir()
-        result = runner.invoke(app, ["my_app"])
-        assert result.exit_code != 0
-        assert "already exists" in result.stdout
-
+def test_existing_directory_fails_isolated(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    Path("my_app").mkdir()
+    result = runner.invoke(app, ["my_app"])
+    assert result.exit_code != 0
+    assert "already exists" in result.stdout
