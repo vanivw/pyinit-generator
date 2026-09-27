@@ -1,6 +1,9 @@
+import subprocess
+
 import typer
 
 from pyinit.generator import generate_project
+from pyinit.runner import run_project
 
 
 app = typer.Typer(
@@ -17,9 +20,12 @@ def main(
     py: str = typer.Option("3.12", "--py", help="Target Python version for generated project"),
     ci: str = typer.Option("github", "--ci", help="CI provider (none/github)"),
     docker: bool = typer.Option(False, "--docker", help="Include Dockerfile"),
+    run: bool = typer.Option(
+        False, "--run", help="Create a venv, install, and launch the generated project"
+    ),
 ):
     try:
-        generate_project(
+        project_dir = generate_project(
             name=name,
             stack=stack,
             pm=pm,
@@ -34,6 +40,16 @@ def main(
         raise typer.Exit(code=1)
 
     typer.secho(f"✔ Created {name}", fg=typer.colors.GREEN)
+
+    if run:
+        package_name = name.replace("-", "_")
+        try:
+            run_project(project_dir, stack, package_name)
+        except subprocess.CalledProcessError as e:
+            typer.secho(f"✖ --run failed: {e}", fg=typer.colors.RED)
+            raise typer.Exit(code=1)
+        return
+
     typer.echo("Next steps:")
     typer.echo(f"  cd {name}")
 
