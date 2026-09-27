@@ -91,6 +91,9 @@ def generate_project(
     if ci == "github":
         render_tree(env, TEMPLATES_DIR / "ci" / "github", project_dir, context)
 
+    if docker:
+        render_tree(env, TEMPLATES_DIR / "docker" / stack, project_dir, context)
+    
     return project_dir
 
 def generate_project_zip(
