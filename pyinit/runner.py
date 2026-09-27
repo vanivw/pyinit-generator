@@ -1,4 +1,5 @@
 from pathlib import Path
+import socket
 import subprocess
 import sys
 import venv
@@ -63,3 +64,23 @@ def run_project(project_dir: Path, stack: str, package_name: str) -> None:
         typer.echo("Launching project...")
 
     launch_project(project_dir, py, stack, package_name)
+
+
+def find_free_port() -> int:
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind(("127.0.0.1", 0))
+        return s.getsockname()[1]
+
+
+def launch_fastapi_background(
+    project_dir: Path, venv_python: Path, package_name: str, port: int
+) -> subprocess.Popen:
+    return subprocess.Popen(
+        [
+            str(venv_python), "-m", "uvicorn",
+            f"{package_name}.main:app",
+            "--host", "127.0.0.1",
+            "--port", str(port),
+        ],
+        cwd=project_dir,
+    )

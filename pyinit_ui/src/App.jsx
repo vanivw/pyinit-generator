@@ -10,28 +10,45 @@ function App() {
   const [docker, setDocker] = useState(true);
   const [ci, setCi] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [runLoading, setRunLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
   const isValidProjectName = (name) => /^[a-zA-Z][a-zA-Z0-9_-]*$/.test(name);
 
-  const handleGenerate = async () => {
-    setError("");
-    setSuccess("");
-
+  const getValidatedProjectName = () => {
     const trimmedName = projectName.trim();
 
     if (!trimmedName) {
       setError("Project name is required.");
-      return;
+      return null;
     }
 
     if (!isValidProjectName(trimmedName)) {
       setError(
         "Project name must start with a letter and contain only letters, numbers, hyphen, or underscore."
       );
-      return;
+      return null;
     }
+
+    return trimmedName;
+  };
+
+  const buildRequestBody = (trimmedName) => ({
+    name: trimmedName,
+    stack,
+    pm,
+    py: pythonVersion,
+    ci: ci ? "github" : "none",
+    docker,
+  });
+
+  const handleGenerate = async () => {
+    setError("");
+    setSuccess("");
+
+    const trimmedName = getValidatedProjectName();
+    if (!trimmedName) return;
 
     setLoading(true);
 
@@ -41,36 +58,29 @@ function App() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          name: trimmedName,
-          stack,
-          pm,
-          py: pythonVersion,
-          ci: ci ? "github" : "none",
-          docker,
-        }),
+        body: JSON.stringify(buildRequestBody(trimmedName)),
       });
 
       if (!response.ok) {
-     let message = "Unable to generate the project. Please try again.";
+        let message = "Unable to generate the project. Please try again.";
 
-  try {
-    const errorData = await response.json();
+        try {
+          const errorData = await response.json();
 
-    if (typeof errorData.detail === "string") {
-      message = errorData.detail;
-    } else if (Array.isArray(errorData.detail)) {
-      message = errorData.detail
-        .map((item) => item.msg)
-        .filter(Boolean)
-        .join(", ");
-    }
-  } catch {
-    // Keep the default message if the response is not JSON.
-  }
+          if (typeof errorData.detail === "string") {
+            message = errorData.detail;
+          } else if (Array.isArray(errorData.detail)) {
+            message = errorData.detail
+              .map((item) => item.msg)
+              .filter(Boolean)
+              .join(", ");
+          }
+        } catch {
+          // Keep the default message if the response is not JSON.
+        }
 
-  throw new Error(message);
-}
+        throw new Error(message);
+      }
 
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
@@ -85,15 +95,64 @@ function App() {
       window.URL.revokeObjectURL(url);
       setSuccess(`Project generated successfully. Downloading ${trimmedName}.zip...`);
     } catch (err) {
-  if (err instanceof TypeError && err.message === "Failed to fetch") {
-    setError(
-      "Cannot connect to the PyInit backend. Please make sure the FastAPI server is running."
-    );
-  } else {
-    setError(err.message || "Something went wrong.");
-  }
+      if (err instanceof TypeError && err.message === "Failed to fetch") {
+        setError(
+          "Cannot connect to the PyInit backend. Please make sure the FastAPI server is running."
+        );
+      } else {
+        setError(err.message || "Something went wrong.");
+      }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGenerateAndRun = async () => {
+    setError("");
+    setSuccess("");
+
+    const trimmedName = getValidatedProjectName();
+    if (!trimmedName) return;
+
+    setRunLoading(true);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/generate-and-run`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(buildRequestBody(trimmedName)),
+      });
+
+      if (!response.ok) {
+        let message = "Unable to start the project. Please try again.";
+
+        try {
+          const errorData = await response.json();
+          if (typeof errorData.detail === "string") {
+            message = errorData.detail;
+          }
+        } catch {
+          // Keep the default message if the response is not JSON.
+        }
+
+        throw new Error(message);
+      }
+
+      const data = await response.json();
+      setSuccess(`Server running. Opening ${data.docs_url} ...`);
+      window.open(data.docs_url, "_blank");
+    } catch (err) {
+      if (err instanceof TypeError && err.message === "Failed to fetch") {
+        setError(
+          "Cannot connect to the PyInit backend. Please make sure the FastAPI server is running."
+        );
+      } else {
+        setError(err.message || "Something went wrong.");
+      }
+    } finally {
+      setRunLoading(false);
     }
   };
 
@@ -221,6 +280,16 @@ function App() {
             >
               {loading ? "Generating project..." : "Generate ZIP"}
             </button>
+
+            {stack === "fastapi" && (
+              <button
+                onClick={handleGenerateAndRun}
+                disabled={runLoading}
+                style={runLoading ? styles.buttonDisabled : styles.button}
+              >
+                {runLoading ? "Starting server..." : "Generate & Run"}
+              </button>
+            )}
 
             {success && <div style={styles.success}>{success}</div>}
             {error && <div style={styles.error}>{error}</div>}

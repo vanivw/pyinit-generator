@@ -47,14 +47,15 @@ The FastAPI template also follows conventions common in enterprise Java/Spring B
 - CLI application template
 - FastAPI template includes a health-check endpoint, structured JSON logging, and YAML-based configuration out of the box
 - Optional Docker support
+- Optional GitHub Actions CI workflow (`--ci github`)
 - Select Poetry, Hatch, or PDM as the package manager
 - Choose the target Python version
 - Download generated projects as ZIP files
+- Generate, install, and run a project in one step (`--run` on the CLI, "Generate & Run" in the web UI) — creates a virtual environment, installs dependencies, and launches the project (opening Swagger for FastAPI)
 - REST API for project generation
 - React web interface
 - Command-line interface
 - Automated tests for project generation
-- Optional GitHub Actions CI workflow (`--ci github`)
 
 ---
 
@@ -146,6 +147,12 @@ Generate a Python library.
 pyinit my-library --stack lib
 ```
 
+Generate a project and immediately set it up and run it (creates a virtual environment, installs dependencies, and launches it — starting a dev server for FastAPI, or running the CLI's entrypoint).
+
+```bash
+pyinit my-api --stack fastapi --run
+```
+
 ---
 
 ## Running the Backend
@@ -195,7 +202,6 @@ pytest
 Planned improvements include:
 
 - Additional project templates
-- Automatic development environment setup
 - More template customization
 - Improved project recommendations
 
