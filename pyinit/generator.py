@@ -88,6 +88,9 @@ def generate_project(
     render_tree(env, TEMPLATES_DIR / "base", project_dir, context)
     render_tree(env, TEMPLATES_DIR / stack, project_dir, context)
 
+    if ci == "github":
+        render_tree(env, TEMPLATES_DIR / "ci" / "github", project_dir, context)
+
     return project_dir
 
 def generate_project_zip(

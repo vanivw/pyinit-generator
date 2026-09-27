@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "{{ python_version }}"
+
+{% if package_manager == "poetry" %}
+      - name: Install Poetry
+        run: pipx install poetry
+
+      - name: Install dependencies
+        run: poetry install
+
+      - name: Run tests
+        run: poetry run pytest -q
+{% elif package_manager == "hatch" %}
+      - name: Install Hatch
+        run: pipx install hatch
+
+      - name: Run tests
+        run: hatch run test
+{% else %}
+      - name: Install PDM
+        run: pipx install pdm
+
+      - name: Install dependencies
+        run: pdm install
+
+      - name: Run tests
+        run: pdm run pytest -q
+{% endif %}
