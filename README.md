@@ -54,6 +54,7 @@ The FastAPI template also follows conventions common in enterprise Java/Spring B
 - React web interface
 - Command-line interface
 - Automated tests for project generation
+- Optional GitHub Actions CI workflow (`--ci github`)
 
 ---
 
@@ -130,19 +131,19 @@ npm install
 Generate a FastAPI project.
 
 ```bash
-pyinit new my-api --stack fastapi
+pyinit my-api --stack fastapi
 ```
 
 Generate a CLI project.
 
 ```bash
-pyinit new my-cli --stack cli
+pyinit my-cli --stack cli
 ```
 
 Generate a Python library.
 
 ```bash
-pyinit new my-library --stack lib
+pyinit my-library --stack lib
 ```
 
 ---

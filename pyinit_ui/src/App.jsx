@@ -8,6 +8,7 @@ function App() {
   const [pm, setPm] = useState("poetry");
   const [pythonVersion, setPythonVersion] = useState("3.12");
   const [docker, setDocker] = useState(true);
+  const [ci, setCi] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -45,7 +46,7 @@ function App() {
           stack,
           pm,
           py: pythonVersion,
-          ci: "github",
+          ci: ci ? "github" : "none",
           docker,
         }),
       });
@@ -196,6 +197,18 @@ function App() {
                   <span>
                     <strong>Dockerfile</strong>
                     <small style={styles.checkboxText}>Include container support</small>
+                  </span>
+                </label>
+                <label style={styles.checkboxBox}>
+                  <input
+                    type="checkbox"
+                    checked={ci}
+                    onChange={(e) => setCi(e.target.checked)}
+                    style={styles.checkbox}
+                  />
+                  <span>
+                    <strong>GitHub Actions CI</strong>
+                    <small style={styles.checkboxText}>Run tests automatically on push</small>
                   </span>
                 </label>
               </div>
